@@ -1,13 +1,12 @@
 import sys
 import re
-from collections import deque
 from typing import IO
 
 splitter = re.compile(r'(...)( |$)')
 
 
-def parse_stacks(f: IO[str]) -> list[deque[str]]:
-    stacks: list[deque[str]] = []
+def parse_stacks(f: IO[str]) -> list[list[str]]:
+    stacks: list[list[str]] = []
 
     for line in f:
         line = line.removesuffix('\n')
@@ -15,6 +14,8 @@ def parse_stacks(f: IO[str]) -> list[deque[str]]:
             continue
 
         if line == '':
+            for i in range(len(stacks)):
+                stacks[i] = list(reversed(stacks[i]))
             return stacks
 
         assert line.startswith('[') or line.startswith('   ')
@@ -23,13 +24,13 @@ def parse_stacks(f: IO[str]) -> list[deque[str]]:
             crate = match.group(1)
             if crate != '   ':
                 while len(stacks) <= i:
-                    stacks.append(deque())
-                stacks[i].appendleft(crate[1])
+                    stacks.append([])
+                stacks[i].append(crate[1])
 
     raise AssertionError("Where am I?")
 
 
-def operate_crane(f: IO[str], stacks: list[deque[str]]) -> list[deque[str]]:
+def operate_crane(f: IO[str], stacks: list[list[str]]) -> list[list[str]]:
     for line in f:
         words = line.split()
         match words:
@@ -44,7 +45,7 @@ def operate_crane(f: IO[str], stacks: list[deque[str]]) -> list[deque[str]]:
     return stacks
 
 
-def print_stacks(stacks: list[deque[str]]):
+def print_stacks(stacks: list[list[str]]):
     for i, stack in enumerate(stacks):
         print(f'{i+1}: ' + ' '.join(f'[{n}] ' for n in stack))
 
@@ -53,10 +54,10 @@ def print_stacks(stacks: list[deque[str]]):
 
 def main(f: IO[str]) -> None:
     stacks = parse_stacks(f)
-    print_stacks(stacks)
+    # print_stacks(stacks)
     stacks = operate_crane(f, stacks)
 
-    print_stacks(stacks)
+    # print_stacks(stacks)
     print(''.join(stack.pop() for stack in stacks))
 
 
