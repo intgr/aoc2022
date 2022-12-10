@@ -37,9 +37,10 @@ def operate_crane(f: IO[str], stacks: list[list[str]]) -> list[list[str]]:
             case ['move', num, 'from', frm, 'to', to]:
                 i_frm = int(frm) - 1
                 i_to = int(to) - 1
+                i_num = int(num)
 
-                moved = reversed([stacks[i_frm].pop() for _ in range(int(num))])
-                stacks[i_to].extend(moved)
+                stacks[i_to].extend(stacks[i_frm][-i_num:])
+                del stacks[i_frm][-i_num:]
             case wat:
                 raise AssertionError(f"Cannot parse {wat}")
     return stacks
